@@ -12,7 +12,6 @@ import subprocess
 
 
 def build(source_path, build_path, install_path, targets):
-
     def _deliver(src, dst, symlink=False):
         if not symlink:
             logger.info('Copying {} to {}'.format(src, dst))
@@ -50,6 +49,11 @@ def build(source_path, build_path, install_path, targets):
         # src = os.path.join(source_path, 'src')
         src = source_path
 
+        # Extra duplicated installation for "tk-core".
+        core_dst_dir = os.path.join(install_path, 'install', 'core')
+        if not os.path.isdir(core_dst_dir):
+            os.makedirs(core_dst_dir)
+
         if os.path.isdir(src):
             logger.info('Src:{}'.format(src))
             logger.info('Dst:{}'.format(install_path))
@@ -60,17 +64,22 @@ def build(source_path, build_path, install_path, targets):
 
                 file_path = os.path.abspath(os.path.join(src, name))
                 _deliver(file_path, os.path.join(install_path, ''), symlink)
+                # Important: install tk-core to "install/core" directory
+                # it will be used Shotgun's default resolving mechanism.
+                _deliver(file_path, os.path.join(core_dst_dir, ''), symlink)
 
         # package.py is to be copied to install path automatically by rez build system
         # _deliver(os.path.join(source_path, 'package.py'), install_path, symlink)
-        
+
         # manage necessary files starts with '.'
         whitelist = []
         for f in whitelist:
             file_ = os.path.join(source_path, f)
             if os.path.isfile(file_):
                 _deliver(file_, os.path.join(install_path, ''), symlink)
-
+                # Important: install tk-core to "install/core" directory
+                # it will be used Shotgun's default resolving mechanism.
+                _deliver(file_, os.path.join(core_dst_dir, ''), symlink)
 
         if not build_current_folder:
             return
@@ -95,7 +104,6 @@ def build(source_path, build_path, install_path, targets):
 
         if not os.path.isdir(os.path.dirname(duplicated_install_path)):
             os.makedirs(os.path.dirname(duplicated_install_path))
-
 
         if symlink:
             # the only use case is local testing for now

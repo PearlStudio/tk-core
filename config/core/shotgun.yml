@@ -1,0 +1,9 @@
+# Shotgun Pipeline Toolkit configuration file
+# this file was automatically created
+
+host: https://pearl.shotgunstudio.com
+api_script: "pearl_sg"
+api_key: "sc9xc-jdjwgmntzJawzjtfqnq"
+http_proxy: null
+
+# End of file.
